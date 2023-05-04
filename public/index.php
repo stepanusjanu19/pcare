@@ -1,0 +1,43 @@
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Rscharitas\MVCPCARE\App\Router;
+use Rscharitas\MVCPCARE\Controller\HomeController;
+use Rscharitas\MVCPCARE\Controller\DiagnosaController;
+use Rscharitas\MVCPCARE\Controller\DokterController;
+use Rscharitas\MVCPCARE\Controller\KesadaranController;
+use Rscharitas\MVCPCARE\Controller\PesertaController;
+use Rscharitas\MVCPCARE\Controller\PendaftaranController;
+use Rscharitas\MVCPCARE\Controller\PoliController;
+use Rscharitas\MVCPCARE\Controller\ProviderController;
+use Rscharitas\MVCPCARE\Controller\Status_PulangController;
+use Rscharitas\MVCPCARE\Controller\SpesialisController;
+
+
+//get data
+Router::add('GET', '/', HomeController::class, 'index');
+Router::add('GET', '/getDiagnosa/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DiagnosaController::class, 'getdiagnosa');
+Router::add('GET', '/getDokter/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DokterController::class, 'getdokter');
+Router::add('GET', '/getKesadaran', KesadaranController::class, 'getkesadaran');
+Router::add('GET', '/getPeserta/([0-9a-zA-Z]*)', PesertaController::class, 'getpeserta');
+Router::add('GET', '/getPoli/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PoliController::class, 'getpoli');
+Router::add('GET', '/getProvider/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', ProviderController::class, 'getprovider');
+Router::add('GET', '/getStatusPulang/([0-9a-zA-Z]*)', Status_PulangController::class, 'getstatuspulang');
+Router::add('GET', '/getSpesialis', SpesialisController::class, 'getspesialis');
+Router::add('GET', '/getSpesialisKhusus', SpesialisController::class, 'getspesialiskhusus');
+Router::add('GET', '/getSpesialisSarana', SpesialisController::class, 'getspesialissarana');
+Router::add('GET', '/getSubSpesialis/([0-9a-zA-Z]*)', SpesialisController::class, 'getsubspesialis');
+
+
+
+//post data
+Router::add('POST', '/postAntrian', PendaftaranController::class, 'postAntrian');
+
+
+// Router::add('GET', '/hello', HomeController::class, 'hello', [AuthMiddleware::class]);
+// Router::add('GET', '/world', HomeController::class, 'world', [AuthMiddleware::class]);
+// Router::add('GET', '/about', HomeController::class, 'about');
+// Router::add('GET', '/products/([0-9a-zA-Z]*)/categories/([0-9a-zA-Z]*)', ProductController::class, 'categories');
+
+Router::run();

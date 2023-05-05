@@ -7,6 +7,7 @@ use Rscharitas\MVCPCARE\Controller\HomeController;
 use Rscharitas\MVCPCARE\Controller\DiagnosaController;
 use Rscharitas\MVCPCARE\Controller\DokterController;
 use Rscharitas\MVCPCARE\Controller\KesadaranController;
+use Rscharitas\MVCPCARE\Controller\KunjunganController;
 use Rscharitas\MVCPCARE\Controller\PesertaController;
 use Rscharitas\MVCPCARE\Controller\PendaftaranController;
 use Rscharitas\MVCPCARE\Controller\PoliController;
@@ -20,6 +21,7 @@ Router::add('GET', '/', HomeController::class, 'index');
 Router::add('GET', '/getDiagnosa/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DiagnosaController::class, 'getdiagnosa');
 Router::add('GET', '/getDokter/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DokterController::class, 'getdokter');
 Router::add('GET', '/getKesadaran', KesadaranController::class, 'getkesadaran');
+Router::add('GET', '/getKunjungan/([0-9a-zA-Z]*)', KunjunganController::class, 'getkunjungan');
 Router::add('GET', '/getPeserta/([0-9a-zA-Z]*)', PesertaController::class, 'getpeserta');
 Router::add('GET', '/getPoli/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PoliController::class, 'getpoli');
 Router::add('GET', '/getProvider/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', ProviderController::class, 'getprovider');
@@ -32,7 +34,8 @@ Router::add('GET', '/getSubSpesialis/([0-9a-zA-Z]*)', SpesialisController::class
 
 
 //post data
-Router::add('POST', '/postAntrian', PendaftaranController::class, 'postAntrian');
+Router::add('POST', '/postAntrian', PendaftaranController::class, 'postantrian');
+Router::add('POST', '/postKunjungan', KunjunganController::class, 'postkunjungan');
 
 
 // Router::add('GET', '/hello', HomeController::class, 'hello', [AuthMiddleware::class]);

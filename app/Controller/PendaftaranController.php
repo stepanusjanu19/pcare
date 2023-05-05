@@ -7,7 +7,7 @@ use Symfony\Component\Dotenv\Dotenv;
 
 class PendaftaranController
 {
-    function postAntrian(): void
+    function postantrian(): void
     {
 
         date_default_timezone_set('UTC');

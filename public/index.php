@@ -23,6 +23,8 @@ Router::add('GET', '/getDokter/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DokterController:
 Router::add('GET', '/getKesadaran', KesadaranController::class, 'getkesadaran');
 Router::add('GET', '/getKunjungan/([0-9a-zA-Z]*)', KunjunganController::class, 'getkunjungan');
 Router::add('GET', '/getPeserta/([0-9a-zA-Z]*)', PesertaController::class, 'getpeserta');
+Router::add('GET', '/getAntrianNoUrut/([0-9a-zA-Z]*)/([0-9]{2}-[0-9]{2}-[0-9]{4})', PendaftaranController::class, 'getbyantrianid');
+Router::add('GET', '/getAntrianProvider/([0-9]{2}-[0-9]{2}-[0-9]{4})/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PendaftaranController::class, 'getantrianbyprovider');
 Router::add('GET', '/getPoli/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PoliController::class, 'getpoli');
 Router::add('GET', '/getProvider/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', ProviderController::class, 'getprovider');
 Router::add('GET', '/getStatusPulang/([0-9a-zA-Z]*)', Status_PulangController::class, 'getstatuspulang');

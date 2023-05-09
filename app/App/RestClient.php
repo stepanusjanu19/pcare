@@ -25,51 +25,65 @@ class RestClient {
         $xtimestamp= $tStamp;
         $xsignature= $encodedSignature;	
 
-        $ch = curl_init();
-        switch ($method) {
-            case "POST":
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'Accept: application/json',
-                    'Content-Type: text/plain',
-                    'X-cons-id:'.$xconsid,
-                    'X-timestamp:'.$xtimestamp,
-                    'X-signature:'.$xsignature,
-                    'user_key:'.$_ENV['USER_KEY'],
-                    'X-authorization:Basic '.$encodedAuthorizatiobn
-                ));    
-                curl_setopt($ch, CURLOPT_POST, 1);
-                if ($data)
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-                break;
-            case "PUT":
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-                if ($data)
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);			 					
-                break;
-            default:
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                    'X-cons-id:'.$xconsid,
-                    'X-timestamp:'.$xtimestamp,
-                    'X-signature:'.$xsignature,
-                    'user_key:'.$_ENV['USER_KEY'],
-                    'X-authorization:Basic '.$encodedAuthorizatiobn
-                ));    
-                if ($data)
-                    $url = sprintf("%s?%s", $url, http_build_query($data));
-        }        
 
-        //set options 
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_URL, $url);
-        // curl_setopt($ch, CURLOPT_POSTREDIR, 3);
-        $content = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-        return $content;
-        // echo $xconsid . " " . $xtimestamp . " " . $xsignature ." ". USER_KEY . " " . $encodedAuthorizatiobn; 
+        try {   
+            $ch = curl_init();
+            switch ($method) {
+                case "POST":
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Accept: application/json',
+                        'Content-Type: text/plain',
+                        'X-cons-id:'.$xconsid,
+                        'X-timestamp:'.$xtimestamp,
+                        'X-signature:'.$xsignature,
+                        'user_key:'.$_ENV['USER_KEY'],
+                        'X-authorization:Basic '.$encodedAuthorizatiobn
+                    ));    
+                    curl_setopt($ch, CURLOPT_POST, 1);
+                    if ($data)
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+                    break;
+                case "PUT":
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+                    if ($data)
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);			 					
+                    break;
+                default:
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'X-cons-id:'.$xconsid,
+                        'X-timestamp:'.$xtimestamp,
+                        'X-signature:'.$xsignature,
+                        'user_key:'.$_ENV['USER_KEY'],
+                        'X-authorization:Basic '.$encodedAuthorizatiobn
+                    ));    
+                    if ($data)
+                        $url = sprintf("%s?%s", $url, http_build_query($data));
+            }        
 
+            //set options 
+            // curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            $content = curl_exec($ch);
+            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $err = curl_error($ch);
+            curl_close($ch);    
+            if($code === 404)
+            {
+                return json_encode([
+                    "message" => "Fatal Error Server Url Not Found",
+                    "status" => $code
+                ]);
+            }
+            else{
+                return $content;
+            }
+            //     // echo $xconsid . " " . $xtimestamp . " " . $xsignature ." ". $_ENV['USER_KEY'] . " " . $encodedAuthorizatiobn; 
+        } catch (Exception $e) {
+            echo "Fatal error message" . $e->getMessage();
+        }
         
     }
 

@@ -21,6 +21,8 @@ class PesertaController
 
         $response = $rest->callAPI('GET', $url, false);
 
+        // echo $response;
+
         try {
             if($response != "")
             {
@@ -55,6 +57,14 @@ class PesertaController
                 "message" => "Data not found for no content",
                 "code" => 204
             ];
+        }
+        catch (Exception $e) {
+            if ($e->getCode() === 500) {
+                $pesan = "Fatal Server response error";
+                
+            } else {
+                $pesan = "Fatal Problem Other" . $e->getMessage();
+            }
         }
         echo json_encode($pesan);
 

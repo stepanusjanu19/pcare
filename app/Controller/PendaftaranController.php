@@ -49,7 +49,7 @@ class PendaftaranController
         $request = array(
             "kdProviderPeserta" => "0132B094", //noted error : kdProviderPeserta tidak sesuai dengan referensi sistem (error: belum tau kode provider peserta nya)
             "tglDaftar" => date('d-m-Y'),
-            "noKartu" => "0002077407336", //0002457745323(example) (noKartu peserta tidak ditemukan)
+            "noKartu" => "0002077406561", //0002457745323(example) (noKartu peserta tidak ditemukan)
             "kdPoli" => "001", //kode poli harus diisi
             "keluhan" => "sakit kepala",
             "kunjSakit" => true,
@@ -195,6 +195,7 @@ class PendaftaranController
         // echo $url;
 
         $response = $this->rest->callAPI('GET', $url, false);
+        // echo $response;
 
         try {
             if($response != "")
@@ -223,6 +224,52 @@ class PendaftaranController
                     ];
                     // echo json_encode($pesan);
                 }
+            }
+        } catch (\Throwable $pesan) {
+            $pesan = [
+                "message" => "Data not found for no content",
+                "code" => 204
+            ];
+        }
+        catch (Exception $e) {
+            if ($e->getCode() === 500) {
+                $pesan = "Fatal Server response error";
+                
+            } else {
+                $pesan = "Fatal Problem Other" . $e->getMessage();
+            }
+        }
+        echo json_encode($pesan);
+    }
+
+    function deleteantrian(string $nokartu, $date, string $nourut, string $kode)
+    {
+        date_default_timezone_set('UTC');
+
+        $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+
+        $this->dotenv->load( __DIR__ . '/.env');
+        $url = $_ENV['URL_API'] . "/pendaftaran/peserta/" . $nokartu . "/tglDaftar/" . $date . "/noUrut/" . $nourut . "/kdPoli/" . $kode;
+
+        // echo $url;
+
+        $response = $this->rest->callAPI('DELETE', $url, false);
+        $json = json_decode( $response, true );
+
+        try {
+            if($json["metaData"]["code"] == 412)
+            {
+                $pesan = [
+                    "message" => "No kartu yang pada poli belum terdaftar",
+                    "status" => 412
+                ];
+            }
+            else
+            {
+                $pesan = [
+                    "message" => "Berhasil Response",
+                    "status" => 200
+                ];
             }
         } catch (\Throwable $pesan) {
             $pesan = [

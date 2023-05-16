@@ -39,6 +39,12 @@ Router::add('GET', '/getSubSpesialis/([0-9a-zA-Z]*)', SpesialisController::class
 Router::add('POST', '/postAntrian', PendaftaranController::class, 'postantrian');
 Router::add('POST', '/postKunjungan', KunjunganController::class, 'postkunjungan');
 
+//delete data
+Router::add('DELETE', '/deleteAntrian/([0-9a-zA-Z]*)/([0-9]{2}-[0-9]{2}-[0-9]{4})/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PendaftaranController::class, 'deleteantrian');
+
+
+
+
 
 // Router::add('GET', '/hello', HomeController::class, 'hello', [AuthMiddleware::class]);
 // Router::add('GET', '/world', HomeController::class, 'world', [AuthMiddleware::class]);

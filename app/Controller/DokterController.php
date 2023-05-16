@@ -21,6 +21,8 @@ class DokterController
 
         $response = $rest->callAPI('GET', $url, false);
 
+        // echo $response;
+
         try {
             if($response != "")
             {

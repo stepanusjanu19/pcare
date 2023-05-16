@@ -19,7 +19,7 @@ class RestClient {
         $signature = hash_hmac('sha256', $_ENV['CONST_ID']."&".$tStamp, $_ENV['SECRET_KEY'], true);
         $encodedSignature = base64_encode($signature);
 
-        $encodedAuthorizatiobn = base64_encode($_ENV['HOSPITAL_ID'].":Charitas2023#:095");
+        $encodedAuthorizatiobn = base64_encode($_ENV['USER_ID'].":L1dwina@:095");
 
         $xconsid= $_ENV['CONST_ID'];
         $xtimestamp= $tStamp;
@@ -47,6 +47,20 @@ class RestClient {
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
                     if ($data)
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);			 					
+                    break;
+                case "DELETE":
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Accept: application/json',
+                        'Content-Type: text/plain',
+                        'X-cons-id:'.$xconsid,
+                        'X-timestamp:'.$xtimestamp,
+                        'X-signature:'.$xsignature,
+                        'user_key:'.$_ENV['USER_KEY'],
+                        'X-authorization:Basic '.$encodedAuthorizatiobn
+                    ));    
+                    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+                    if ($data)
+                        $url = sprintf("%s?%s", $url, http_build_query($data));
                     break;
                 default:
                     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -80,7 +94,7 @@ class RestClient {
             else{
                 return $content;
             }
-            //     // echo $xconsid . " " . $xtimestamp . " " . $xsignature ." ". $_ENV['USER_KEY'] . " " . $encodedAuthorizatiobn; 
+            // echo $xconsid . " " . $xtimestamp . " " . $xsignature ." ". $_ENV['USER_KEY'] . " " . $encodedAuthorizatiobn; 
         } catch (Exception $e) {
             echo "Fatal error message" . $e->getMessage();
         }

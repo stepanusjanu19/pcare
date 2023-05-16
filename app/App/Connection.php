@@ -8,9 +8,9 @@ class Connection {
     private $dsn;
     private $user;
     private $pass;
-    protected $resultSet;
+    // protected $resultSet;
     private $conn;
-    public $rowCount;
+    // public $rowCount;
 
     function __construct($connectNow = true) {
 
@@ -37,76 +37,85 @@ class Connection {
         odbc_close($this->conn);
     }
 
-    public function executeQuery($sqlString, $sqlParams = null, $errMsg =  'Unknown Error')
-    {
-
-        if($this->resultSet)
-        {
-            odbc_free_result($this->resultSet);
+    public function execute($sql) {
+        if (!$this->conn) {
+            $this->connect();
         }
-
-        if($sqlParams == null)
-        {
-            $this->resultSet = odbc_exec($this->conn, $sqlString) or die($errMsg);
-            // echo $this->resultSet;
+        $stmt = odbc_exec($this->conn, $sql);
+        if (!$stmt) {
+            die("Error executing SQL statement: " . odbc_errormsg());
         }
-        else
-        {
-            $this->resultSet = odbc_prepare($this->conn, $sqlString);
-            odbc_execute($this->resultSet, $sqlParams) or die($errMsg);
-        }
+        return $stmt;
     }
 
-    public function fetchArrayList()
-    {
-        $row = array();
-        $rows = array();
+    // public function executeQuery($sqlString, $sqlParams = null, $errMsg =  'Unknown Error')
+    // {
 
-        while(odbc_fetch_into($this->resultSet, $row))
-        {
-            array_push($rows,$row);
-        }
+    //     if($this->resultSet)
+    //     {
+    //         odbc_free_result($this->resultSet);
+    //     }
 
-        $this->fetchRowCount($rows);
-        return $rows;
-    }
+    //     if($sqlParams == null)
+    //     {
+    //         $this->resultSet = odbc_exec($this->conn, $sqlString) or die($errMsg);
+    //         // echo $this->resultSet;
+    //     }
+    //     else
+    //     {
+    //         $this->resultSet = odbc_prepare($this->conn, $sqlString);
+    //         odbc_execute($this->resultSet, $sqlParams) or die($errMsg);
+    //     }
+    // }
+
+    // public function fetchArrayList()
+    // {
+    //     $row = array();
+    //     $rows = array();
+
+    //     while(odbc_fetch_into($this->resultSet, $row))
+    //     {
+    //         array_push($rows,$row);
+    //     }
+
+    //     $this->fetchRowCount($rows);
+    //     return $rows;
+    // }
 
 
-    public function fetchArrayListEx()
-    {
-        $i = 0 ;
-        $j = 0;
-        $tmpResult = array();
-        while(odbc_fetch_row($this->resultSet))
-        {
-            for($j=1; $j<= odbc_num_fields($this->resultSet); $j++)
-            {
-                $fieldName = odbc_field_name($this->resultSet,$j);
-                $ar[$fieldName] = odbc_result($this->resultSet,$fieldName);
-            }
-            $tmpResult[$i]  = $ar;
-            $i++;
-        }
+    // public function fetchArrayListEx()
+    // {
+    //     $i = 0 ;
+    //     // $j = 0;
+    //     $tmpResult = array();
+    //     while(odbc_fetch_row($this->resultSet))
+    //     {
+    //         for($j=1; $j<= odbc_num_fields($this->resultSet); $j++)
+    //         {
+    //             $fieldName = odbc_field_name($this->resultSet,$j);
+    //             $ar[$fieldName] = odbc_result($this->resultSet,$fieldName);
+    //         }
+    //         $tmpResult[$i]  = $ar;
+    //         $i++;
+    //     }
 
-        //sets row count property
-        $this->fetchRowCount($tmpResult);
-        return $tmpResult;
-    }
+    //     //sets row count property
+    //     $this->fetchRowCount($tmpResult);
+    //     return $tmpResult;
+    // }
 
-    private function fetchRowCount($arrCount )
-    {
-        if(is_array($arrCount))
-        {
-            $this->rowCount = sizeof($arrCount);
-        }
+    // private function fetchRowCount($arrCount)
+    // {
+    //     if(is_array($arrCount))
+    //     {
+    //         $this->rowCount = sizeof($arrCount);
+    //     }
+    // }
 
-    }
-
-    public function printOut($obj)
-    {
-        echo "<pre>";
-        print_r($obj);
-        echo "</pre>";
-
-    }
+    // public function printOut($obj)
+    // {   
+    //     echo "<pre>";
+    //     print_r($obj);
+    //     echo "</pre>";
+    // }
 }

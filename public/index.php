@@ -34,6 +34,11 @@ Router::add('GET', '/getSpesialisSarana', SpesialisController::class, 'getspesia
 Router::add('GET', '/getSubSpesialis/([0-9a-zA-Z]*)', SpesialisController::class, 'getsubspesialis');
 
 
+//display
+Router::add('GET', '/viewAntrian', PendaftaranController::class, 'viewantrian');
+Router::add('GET', '/viewPeserta', PesertaController::class, 'viewpeserta');
+
+
 
 //post data
 Router::add('POST', '/postAntrian', PendaftaranController::class, 'postantrian');

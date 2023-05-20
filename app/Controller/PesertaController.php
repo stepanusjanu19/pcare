@@ -3,9 +3,19 @@ namespace Rscharitas\MVCPCARE\Controller;
 use Rscharitas\MVCPCARE\App\RestClient;
 use LZCompressor\LZString as LZ;
 use Symfony\Component\Dotenv\Dotenv;
+use Rscharitas\MVCPCARE\App\View;
 
 class PesertaController
 {
+
+
+    public function viewpeserta()
+    {
+        $viewpath = 'resources/views';
+        $template = 'template';
+        $view = new View($viewpath, $template);
+        $view->render('peserta');
+    }
 
     function getpeserta(string $nokartu): void
     {

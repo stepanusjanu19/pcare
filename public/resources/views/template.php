@@ -14,30 +14,34 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
 <script>
     $(document).ready(() => {
         $('#btncari').click(() => {
             const origin = location.origin;
             const nokartu = $('#postnokartu').val();
-            // console.log(origin);
+            
             axios({
                 method: "get",
                 url: origin +"/getPeserta/" + nokartu
             })
             .then((response) => {
-                var html = "";
-                if (response.data.data.length > 0)
-                {
-                    
-                }
-                else{
-                    html += `<tr>
-                                <td colspan="6">Tes</td>
-                            </tr>`;
-                }
+                var html = ""
+                html += `<tr class="text-center">
+                                        <td>${response.data.data.nama}</td>
+                                        <td>${response.data.data.noKartu}</td>
+                                        <td>${response.data.data.kdProviderPst.kdProvider}</td>
+                                        <td>${response.data.data.sex}</td>
+                                        <td>${response.data.data.golDarah}</td>
+                                        <td>${response.data.data.tglLahir}</td>
+                                </tr>`;
                 $("#datapeserta").html(html);
+                console.log(response.data.data);
             })
+            
         })
     })
+        
 </script>
 </html>

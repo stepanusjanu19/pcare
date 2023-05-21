@@ -26,13 +26,13 @@
             </table> -->
 
             <table class="table">
-                <thead>
+                <thead class="text-center">
                     <tr>
+                    <th scope="col">Full Name</th>
                     <th scope="col">Card Number</th>
                     <th scope="col">Provider Code</th>
                     <th scope="col">Sex</th>
                     <th scope="col">Blood Type</th>
-                    <th scope="col">Response</th>
                     <th scope="col">Birth Date</th>
                     </tr>
                 </thead>

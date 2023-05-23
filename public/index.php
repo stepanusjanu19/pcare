@@ -16,8 +16,16 @@ use Rscharitas\MVCPCARE\Controller\Status_PulangController;
 use Rscharitas\MVCPCARE\Controller\SpesialisController;
 
 
-//get data
+//display
 Router::add('GET', '/', HomeController::class, 'index');
+Router::add('GET', '/viewAntrian', PendaftaranController::class, 'viewantrian');
+
+
+//get model
+Router::add('GET', '/getmodel', PendaftaranController::class, 'getmodel');
+
+
+//get data
 Router::add('GET', '/getDiagnosa/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DiagnosaController::class, 'getdiagnosa');
 Router::add('GET', '/getDokter/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DokterController::class, 'getdokter');
 Router::add('GET', '/getKesadaran', KesadaranController::class, 'getkesadaran');
@@ -32,12 +40,6 @@ Router::add('GET', '/getSpesialis', SpesialisController::class, 'getspesialis');
 Router::add('GET', '/getSpesialisKhusus', SpesialisController::class, 'getspesialiskhusus');
 Router::add('GET', '/getSpesialisSarana', SpesialisController::class, 'getspesialissarana');
 Router::add('GET', '/getSubSpesialis/([0-9a-zA-Z]*)', SpesialisController::class, 'getsubspesialis');
-
-
-//display
-Router::add('GET', '/viewAntrian', PendaftaranController::class, 'viewantrian');
-Router::add('GET', '/viewPeserta', PesertaController::class, 'viewpeserta');
-
 
 
 //post data

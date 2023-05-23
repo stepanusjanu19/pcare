@@ -12,12 +12,14 @@ class PendaftaranController
     public $dotenv;
     public $rest;
     public $tstamp;
+    public $kodeprovider;
 
     public function __construct() { 
 
         $this->dotenv = new Dotenv();
         $this->rest = new RestClient();
         $this->model = new PendaftaranModel();
+        $this->kodeprovider = "0090B094";
 
     }
 
@@ -29,6 +31,11 @@ class PendaftaranController
         $view->render('antriandaftar');
     }
 
+    function getmodel()
+    {
+        $this->model->queryantrian(); 
+    }
+
     function postantrian(): void
     {
         date_default_timezone_set('UTC');
@@ -37,31 +44,16 @@ class PendaftaranController
         $this->dotenv->load( __DIR__ . '/.env');
 
         $url = $_ENV['URL_API'] . "/pendaftaran";
+        
+        $post = file_get_contents('php://input') ?? $_POST;
+        $post = json_decode($post, true);
 
-        // $request = array(
-        //     "kdProviderPeserta" => "0114A026", //noted error : kdProviderPeserta tidak sesuai dengan referensi sistem (error: belum tau kode provider peserta nya)
-        //     "tglDaftar" => "12-08-2015", //date berpengaruh dalam post data
-        //     "noKartu" => "0001113569638", //0002457745323(example) (noKartu peserta tidak ditemukan)
-        //     "kdPoli" => "001", //kode poli harus diisi
-        //     "keluhan" => null,
-        //     "kunjSakit" => true,
-        //     "sistole" =>  0,
-        //     "diastole" =>  0,
-        //     "beratBadan" => 0,
-        //     "tinggiBadan" => 0,
-        //     "respRate" => 0,
-        //     "lingkarPerut" => 0,
-        //     "heartRate" => 0,
-        //     "rujukBalik" => 0,
-        //     "kdTkp"=>"10"
-        // );
-
-        // request post name    
         $request = array(
-            "kdProviderPeserta" => "13290101", //noted error : kdProviderPeserta tidak sesuai dengan referensi sistem (error: belum tau kode provider peserta nya)
+            // "kdProviderPeserta" => is_null($this->kodeprovider) ? null : $this->kodeprovider, //noted error : kdProviderPeserta tidak sesuai dengan referensi sistem (error: belum tau kode provider peserta nya) (kdprovider set data)
+            "kdProviderPeserta" => isset($post['kdproviderpst']) ? $post['kdproviderpst'] : null, //noted error : kdProviderPeserta tidak sesuai dengan referensi sistem (error: belum tau kode provider peserta nya) (kdprovider set data)
             "tglDaftar" => date('d-m-Y'),
-            "noKartu" => "0002145000374", //0002457745323(example) (noKartu peserta tidak ditemukan)
-            "kdPoli" => "999", //kode poli harus diisi
+            "noKartu" => isset($post['nokartu']) ? $post['nokartu'] : null, //0002457745323(example) (noKartu peserta tidak ditemukan)
+            "kdPoli" => "001", //kode poli harus diisi
             "keluhan" => "sakit kepala",
             "kunjSakit" => true,
             "sistole" =>  0,
@@ -74,6 +66,8 @@ class PendaftaranController
             "rujukBalik" => 0,
             "kdTkp"=>"10"
         );
+
+        
 
         // $request = array(
         //     "kdProviderPeserta" => "",
@@ -96,42 +90,50 @@ class PendaftaranController
         $response = $this->rest->callAPI('POST', $url, json_encode($request));
         $decodejson1 = json_decode($response, true);
 
-        try {
-            if($decodejson1["response"] != "")
-            {
-                $stringdecrypt = $this->rest->stringDecrypt($_ENV['CONST_ID'].$_ENV['SECRET_KEY'].$tStamp, $decodejson1["response"]);
-                $decompressed = @ LZ::decompressFromEncodedURIComponent($stringdecrypt);
-                $decodejson = json_decode($decompressed,true);
-
-                if ($decodejson1["metaData"]["code"] == 412) {
-                    $pesan = [
-                        "message" => "Failed Response, Post Failed",
-                        "status" => 412,
-                        "data" => $decodejson
-                    ];
+        if ($response != "")
+        {
+            try {
+                if($decodejson1["response"] != "")
+                {
+                    $stringdecrypt = $this->rest->stringDecrypt($_ENV['CONST_ID'].$_ENV['SECRET_KEY'].$tStamp, $decodejson1["response"]);
+                    $decompressed = @ LZ::decompressFromEncodedURIComponent($stringdecrypt);
+                    $decodejson = json_decode($decompressed,true);
+    
+                    if ($decodejson1["metaData"]["code"] == 412) {
+                        $pesan = [
+                            "message" => "Failed Response, Post Failed",
+                            "code" => 412,
+                            "data" => $decodejson
+                        ];
+                    }
+                    else{
+                        $pesan = [
+                            "message" => "Success Response, Post Success",
+                            "code" => 200,
+                            "data" => $decodejson
+                        ];
+                    }
                 }
                 else{
                     $pesan = [
-                        "message" => "Success Response, Post Success",
-                        "status" => 200,
-                        "data" => $decodejson
+                        "message" => "Failed Response, Post Failed",
+                        "code" => 400,
                     ];
-                }
+                }         
             }
-            else{
+            catch (Exception $e) {
                 $pesan = [
-                    "message" => "Failed Response, Post Failed",
-                    "status" => 400,
+                    "message" => "Fatal Problem Other" . $e->getMessage()
                 ];
             }
-            echo json_encode($pesan);
-            
         }
-        catch (Exception $e) {
-            echo json_encode([
-                "message" => "Fatal Problem Other" . $e->getMessage()
-            ]);
+        else{
+            $pesan = [
+                "message" => "Not Found Url",
+                "code" => 404
+            ];
         }
+        echo json_encode($pesan);
 
         // $decodejson1 = json_decode($response, true);
 
@@ -156,49 +158,101 @@ class PendaftaranController
 
         $response = $this->rest->callAPI('GET', $url, false);
 
-        try {
-            if($response != "")
-            {
-                $decodejson1 = json_decode($response, true);
-
-                if($decodejson1 == null)
-                {
-                    $pesan = [
-                        "message" => "Gagal Response",
-                        "status" => 400,
-                        "data" => $decodejson1
-                    ];
-
-                    // echo json_encode($pesan);
-                }
-                else{
+        $decodejson1 = json_decode($response, true);
+        
+        if ($decodejson1["status"] === 404)
+        {
+            $pesan = [
+                "message" => "Not Found Url",
+                "code" => 404
+            ];
+        }
+        else{
+                try {   
                     $stringdecrypt = $this->rest->stringDecrypt($_ENV['CONST_ID'].$_ENV['SECRET_KEY'].$tStamp, $decodejson1["response"]);
                     $decompressed = @ LZ::decompressFromEncodedURIComponent($stringdecrypt);
                     $decodejson = json_decode($decompressed,true);
-            
+    
+                    if($decodejson1["metaData"]["code"] == 412)
+                    {
+                        $pesan = [
+                            "message" => "Not Found Data, Params is not null",
+                            "code" => 412,
+                            "data" => $decodejson
+                        ];
+        
+                        // echo json_encode($pesan);
+                    }
+                    else{            
+                        $pesan = [
+                            "message" => "Berhasil Response",
+                            "code" => 200,
+                            "data" => $decodejson
+                        ];
+                        // echo json_encode($pesan);
+                    }
+                } catch (\Throwable $pesan) {
                     $pesan = [
-                        "message" => "Berhasil Response",
-                        "status" => 200,
-                        "data" => $decodejson
+                        "message" => "Data not found for no content",
+                        "code" => 204
                     ];
-                    // echo json_encode($pesan);
                 }
-            }
-        } catch (\Throwable $pesan) {
-            $pesan = [
-                "message" => "Data not found for no content",
-                "code" => 204
-            ];
+                catch (Exception $e) {
+                    if ($e->getCode() === 500) {
+                        $pesan = "Fatal Server response error";
+                        
+                    } else {
+                        $pesan = "Fatal Problem Other" . $e->getMessage();
+                    }
+                }
         }
-        catch (Exception $e) {
-            if ($e->getCode() === 500) {
-                $pesan = "Fatal Server response error";
-                
-            } else {
-                $pesan = "Fatal Problem Other" . $e->getMessage();
-            }
-        }
+        
         echo json_encode($pesan);
+        
+
+        // try {
+        //     if($response != "")
+        //     {
+        //         $decodejson1 = json_decode($response, true);
+
+        //         if($decodejson1 == null)
+        //         {
+        //             $pesan = [
+        //                 "message" => "Gagal Response",
+        //                 "code" => 400,
+        //                 "data" => $decodejson1
+        //             ];
+
+        //             // echo json_encode($pesan);
+        //         }
+        //         else{
+        //             $stringdecrypt = $this->rest->stringDecrypt($_ENV['CONST_ID'].$_ENV['SECRET_KEY'].$tStamp, $decodejson1["response"]);
+        //             $decompressed = @ LZ::decompressFromEncodedURIComponent($stringdecrypt);
+        //             $decodejson = json_decode($decompressed,true);
+            
+        //             $pesan = [
+        //                 "message" => "Berhasil Response",
+        //                 "code" => 200,
+        //                 "data" => $decodejson
+        //             ];
+        //             // echo json_encode($pesan);
+        //         }
+        //     }
+        // } catch (\Throwable $pesan) {
+        //     $pesan = [
+        //         "message" => "Data not found for no content",
+        //         "code" => 204
+        //     ];
+        // }
+        // catch (Exception $e) {
+        //     if ($e->getCode() === 500) {
+        //         $pesan = "Fatal Server response error";
+                
+        //     } else {
+        //         $pesan = "Fatal Problem Other" . $e->getMessage();
+        //     }
+        // }
+        // echo json_encode($pesan);
     }
 
     function getantrianbyprovider($date, int $start, int $limit): void
@@ -213,50 +267,55 @@ class PendaftaranController
         // echo $url;
 
         $response = $this->rest->callAPI('GET', $url, false);
-        // echo $response;
-
-        try {
-            if($response != "")
-            {
-                $decodejson1 = json_decode($response, true);
-
-                if($decodejson1 == null)
-                {
-                    $pesan = [
-                        "message" => "Gagal Response",
-                        "status" => 400,
-                        "data" => $decodejson1
-                    ];
-
-                    // echo json_encode($pesan);
-                }
-                else{
+        $decodejson1 = json_decode($response, true);
+        
+        if ($decodejson1["status"] === 404)
+        {
+            $pesan = [
+                "message" => "Not Found Url",
+                "code" => 404
+            ];
+        }
+        else{
+                try {   
                     $stringdecrypt = $this->rest->stringDecrypt($_ENV['CONST_ID'].$_ENV['SECRET_KEY'].$tStamp, $decodejson1["response"]);
                     $decompressed = @ LZ::decompressFromEncodedURIComponent($stringdecrypt);
                     $decodejson = json_decode($decompressed,true);
-            
+    
+                    if($decodejson1["metaData"]["code"] == 412)
+                    {
+                        $pesan = [
+                            "message" => "Not Found Data, Params is not null",
+                            "code" => 412,
+                            "data" => $decodejson
+                        ];
+        
+                        // echo json_encode($pesan);
+                    }
+                    else{            
+                        $pesan = [
+                            "message" => "Berhasil Response",
+                            "code" => 200,
+                            "data" => $decodejson
+                        ];
+                        // echo json_encode($pesan);
+                    }
+                } catch (\Throwable $pesan) {
                     $pesan = [
-                        "message" => "Berhasil Response",
-                        "status" => 200,
-                        "data" => $decodejson
+                        "message" => "Data not found for no content",
+                        "code" => 204
                     ];
-                    // echo json_encode($pesan);
                 }
-            }
-        } catch (\Throwable $pesan) {
-            $pesan = [
-                "message" => "Data not found for no content",
-                "code" => 204
-            ];
+                catch (Exception $e) {
+                    if ($e->getCode() === 500) {
+                        $pesan = "Fatal Server response error";
+                        
+                    } else {
+                        $pesan = "Fatal Problem Other" . $e->getMessage();
+                    }
+                }
         }
-        catch (Exception $e) {
-            if ($e->getCode() === 500) {
-                $pesan = "Fatal Server response error";
-                
-            } else {
-                $pesan = "Fatal Problem Other" . $e->getMessage();
-            }
-        }
+        
         echo json_encode($pesan);
     }
 
@@ -270,40 +329,36 @@ class PendaftaranController
         $url = $_ENV['URL_API'] . "/pendaftaran/peserta/" . $nokartu . "/tglDaftar/" . $date . "/noUrut/" . $nourut . "/kdPoli/" . $kode;
 
         // echo $url;
-
+        // echo $response;
+        // echo $decodejson1["response"];
+        //         $stringdecrypt = $this->rest->stringDecrypt($_ENV['CONST_ID'].$_ENV['SECRET_KEY'].$tStamp, $decodejson1["response"]);
+        //         $decompressed = @ LZ::decompressFromEncodedURIComponent($stringdecrypt);
+        //         $decodejson = json_decode($decompressed,true);
+        
         $response = $this->rest->callAPI('DELETE', $url, false);
-        $decodejson1 = json_decode( $response, true );
+        $decodejson1 = json_decode($response);
 
         try {
-
-            if($decodejson1["response"] != "")
+            if($decodejson1->metaData->code == 412)
             {
-                $stringdecrypt = $this->rest->stringDecrypt($_ENV['CONST_ID'].$_ENV['SECRET_KEY'].$tStamp, $decodejson1["response"]);
-                $decompressed = @ LZ::decompressFromEncodedURIComponent($stringdecrypt);
-                $decodejson = json_decode($decompressed,true);
+                $pesan = [
+                    "message" => "Failed Response, Delete Failed, Params is not null",
+                    "code" => 412,
+                ];
+            }
+            else if ($decodejson1->metaData->code == 200) {
 
-                if ($decodejson1["metaData"]["code"] == 412) {
-                    $pesan = [
-                        "message" => "Failed Response, Delete Failed",
-                        "status" => 412,
-                        "data" => $decodejson
-                    ];
-                }
-                else{
-                    $pesan = [
-                        "message" => "Success Response, Delete Success",
-                        "status" => 200,
-                    ];
-                }
+                $pesan = [
+                    "message" => "Success Response, Delete Success",
+                    "code" => 200,
+                ];
             }
             else{
                 $pesan = [
                     "message" => "Failed Response, Delete Failed",
-                    "status" => 400,
+                    "code" => 400,
                 ];
             }
-            echo json_encode($pesan);
-
         } catch (\Throwable $pesan) {
             $pesan = [
                 "message" => "Data not found for no content",

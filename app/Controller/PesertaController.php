@@ -3,19 +3,9 @@ namespace Rscharitas\MVCPCARE\Controller;
 use Rscharitas\MVCPCARE\App\RestClient;
 use LZCompressor\LZString as LZ;
 use Symfony\Component\Dotenv\Dotenv;
-use Rscharitas\MVCPCARE\App\View;
 
 class PesertaController
 {
-
-
-    public function viewpeserta()
-    {
-        $viewpath = 'resources/views';
-        $template = 'template';
-        $view = new View($viewpath, $template);
-        $view->render('peserta');
-    }
 
     function getpeserta(string $nokartu): void
     {
@@ -30,20 +20,25 @@ class PesertaController
         $url = $_ENV['URL_API'] . "/peserta/" . $nokartu;
 
         $response = $rest->callAPI('GET', $url, false);
+        $decodejson1 = json_decode($response, true);
 
-        // echo $response;
-
-        try {
-            if($response != "")
-            {
-                $decodejson1 = json_decode($response, true);
-
-                if($decodejson1 == null)
+        if($response)
+        {
+            try {
+                if($decodejson1["metaData"]["code"] == 404)
+                    {
+                        $pesan = [
+                            "message" => "Not Found Url",
+                            "code" => 404,
+                        ];
+    
+                        // echo json_encode($pesan);
+                }
+                else if($decodejson1["metaData"]["code"] == 412)
                 {
                     $pesan = [
-                        "message" => "Gagal Response",
-                        "status" => 400,
-                        "data" => $decodejson1
+                        "message" => "Not Found Data, Params is not null",
+                        "code" => 412,
                     ];
 
                     // echo json_encode($pesan);
@@ -55,28 +50,40 @@ class PesertaController
             
                     $pesan = [
                         "message" => "Berhasil Response",
-                        "status" => 200,
+                        "code" => 200,
                         "data" => $decodejson
                     ];
             
                     // echo json_encode($pesan);
                 }
+            } catch (\Throwable $pesan) {
+                $pesan = [
+                    "message" => "Data not found for no content",
+                    "code" => 204
+                ];
             }
-        } catch (\Throwable $pesan) {
+            catch (Exception $e) {
+                if ($e->getCode() === 500) {
+                    $pesan = "Fatal Server response error";
+                    
+                } else {
+                    $pesan = "Fatal Problem Other" . $e->getMessage();
+                }
+            }
+        }
+        else{
             $pesan = [
-                "message" => "Data not found for no content",
-                "code" => 204
+                "message" => "Gagal Response",
+                "code" => 500
             ];
         }
-        catch (Exception $e) {
-            if ($e->getCode() === 500) {
-                $pesan = "Fatal Server response error";
-                
-            } else {
-                $pesan = "Fatal Problem Other" . $e->getMessage();
-            }
-        }
         echo json_encode($pesan);
+
+        // echo $response;
+        
+        // print_r($decodejson1);
+
+        
 
     }
     

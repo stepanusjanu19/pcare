@@ -29,7 +29,8 @@ Router::add('GET', '/getmodel', PendaftaranController::class, 'getmodel');
 Router::add('GET', '/getDiagnosa/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DiagnosaController::class, 'getdiagnosa');
 Router::add('GET', '/getDokter/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', DokterController::class, 'getdokter');
 Router::add('GET', '/getKesadaran', KesadaranController::class, 'getkesadaran');
-Router::add('GET', '/getKunjungan/([0-9a-zA-Z]*)', KunjunganController::class, 'getkunjungan');
+Router::add('GET', '/getRujukan/([0-9a-zA-Z]*)', KunjunganController::class, 'getrujukan');
+Router::add('GET', '/getRiwayatKunjungan/([0-9a-zA-Z]*)', KunjunganController::class, 'getriwayatkunjungan');
 Router::add('GET', '/getPeserta/([0-9a-zA-Z]*)', PesertaController::class, 'getpeserta');
 Router::add('GET', '/getAntrianNoUrut/([0-9a-zA-Z]*)/([0-9]{2}-[0-9]{2}-[0-9]{4})', PendaftaranController::class, 'getbyantrianid');
 Router::add('GET', '/getAntrianProvider/([0-9]{2}-[0-9]{2}-[0-9]{4})/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PendaftaranController::class, 'getantrianbyprovider');
@@ -39,6 +40,9 @@ Router::add('GET', '/getStatusPulang/([0-9a-zA-Z]*)', Status_PulangController::c
 Router::add('GET', '/getSpesialis', SpesialisController::class, 'getspesialis');
 Router::add('GET', '/getSpesialisKhusus', SpesialisController::class, 'getspesialiskhusus');
 Router::add('GET', '/getSpesialisSarana', SpesialisController::class, 'getspesialissarana');
+Router::add('GET', '/getFaskesRujukSubSpes/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)/([0-9]{2}-[0-9]{2}-[0-9]{4})', SpesialisController::class, 'getfaskesrujukansubspes');
+Router::add('GET', '/getFaskesRujukKhusus/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)/([0-9]{2}-[0-9]{2}-[0-9]{4})', SpesialisController::class, 'getfaskesrujukankhusus');
+Router::add('GET', '/getFaskesRujukKhusus2/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)/([0-9]{2}-[0-9]{2}-[0-9]{4})', SpesialisController::class, 'getfaskesrujukankhusus2');
 Router::add('GET', '/getSubSpesialis/([0-9a-zA-Z]*)', SpesialisController::class, 'getsubspesialis');
 
 

@@ -32,6 +32,7 @@ Router::add('GET', '/getKesadaran', KesadaranController::class, 'getkesadaran');
 Router::add('GET', '/getRujukan/([0-9a-zA-Z]*)', KunjunganController::class, 'getrujukan');
 Router::add('GET', '/getRiwayatKunjungan/([0-9a-zA-Z]*)', KunjunganController::class, 'getriwayatkunjungan');
 Router::add('GET', '/getPeserta/([0-9a-zA-Z]*)', PesertaController::class, 'getpeserta');
+Router::add('GET', '/getPesertaByJenisKartu/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PesertaController::class, 'getpesertabyjeniskartu');
 Router::add('GET', '/getAntrianNoUrut/([0-9a-zA-Z]*)/([0-9]{2}-[0-9]{2}-[0-9]{4})', PendaftaranController::class, 'getbyantrianid');
 Router::add('GET', '/getAntrianProvider/([0-9]{2}-[0-9]{2}-[0-9]{4})/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PendaftaranController::class, 'getantrianbyprovider');
 Router::add('GET', '/getPoli/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PoliController::class, 'getpoli');
@@ -50,8 +51,16 @@ Router::add('GET', '/getSubSpesialis/([0-9a-zA-Z]*)', SpesialisController::class
 Router::add('POST', '/postAntrian', PendaftaranController::class, 'postantrian');
 Router::add('POST', '/postKunjungan', KunjunganController::class, 'postkunjungan');
 
+//put data
+Router::add('PUT', '/editKunjungan', KunjunganController::class, 'editkunjungan');
+
 //delete data
 Router::add('DELETE', '/deleteAntrian/([0-9a-zA-Z]*)/([0-9]{2}-[0-9]{2}-[0-9]{4})/([0-9a-zA-Z]*)/([0-9a-zA-Z]*)', PendaftaranController::class, 'deleteantrian');
+Router::add('DELETE', '/deleteKunjungan/([0-9a-zA-Z]*)', KunjunganController::class, 'deletekunjungan');
+
+
+//web
+Router::add('POST', '/webPostAntrian', PendaftaranController::class, 'webpostantrian');
 
 
 

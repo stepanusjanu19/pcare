@@ -1,3 +1,12 @@
 .sizeindex{
     width:10% !important
 }
+.tempelcount{
+    font-size: larger;
+    padding: 0.2em 0;
+}
+.search_text
+{
+    width: 25em !important;
+    text-align: center;
+}

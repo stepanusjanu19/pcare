@@ -44,6 +44,15 @@ class RestClient {
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
                     break;
                 case "PUT":
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                        'Accept: application/json',
+                        'Content-Type: text/plain',
+                        'X-cons-id:'.$xconsid,
+                        'X-timestamp:'.$xtimestamp,
+                        'X-signature:'.$xsignature,
+                        'user_key:'.$_ENV['USER_KEY'],
+                        'X-authorization:Basic '.$encodedAuthorizatiobn
+                    ));
                     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
                     if ($data)
                         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);			 					
@@ -80,6 +89,7 @@ class RestClient {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 0);
             $content = curl_exec($ch);
             $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $err = curl_error($ch);
@@ -93,8 +103,9 @@ class RestClient {
             }
             else{
                 return $content;
+                // echo $xconsid . " " . $xtimestamp . " " . $xsignature ." ". $_ENV['USER_KEY'] . " " . $encodedAuthorizatiobn; 
             }
-            // echo $xconsid . " " . $xtimestamp . " " . $xsignature ." ". $_ENV['USER_KEY'] . " " . $encodedAuthorizatiobn; 
+            
         } catch (Exception $e) {
             echo "Fatal error message" . $e->getMessage();
         }

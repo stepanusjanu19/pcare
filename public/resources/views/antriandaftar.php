@@ -6,9 +6,26 @@
         </div>
         <div class="row mb-5 mt-4 justify-content-center">
             <nav class="navbar navbar-light bg-transparent">
-                <form class="form-inline">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Silahkan isi no kartu BPJS" aria-label="Search" id="postnokartu">
-                    <button class="btn btn-outline-primary my-2 my-sm-0" type="button" id="btncari">Search</button>
+                <form class="form-group">
+                    <div class="row mb-2 justify-content-center">
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                            </label>
+                            <input type="radio" class="form-check-input" name="pilihjenis" value="nik">NIK
+                        </div>
+                        <div class="form-check-inline">
+                            <label class="form-check-label">
+                            </label>
+                            <input type="radio" class="form-check-input" name="pilihjenis" value="noka">No Kartu 
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="form-inline">
+                            <input class="form-control mr-sm-2 search_text" type="search" placeholder="Silahkan isi kolom dengan nokartu / nik" aria-label="Search" id="posttext">
+                            <button class="btn btn-outline-primary my-2 my-sm-0" type="button" id="btncari"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                    
                 </form>
             </nav>
         </div>
@@ -64,26 +81,114 @@
                 </tbody>
             </table>
         </div>
-        <div class="modal fade" id="hapusModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="false">
-            <div class="modal-dialog" role="document">
+        <div class="row justify-content-left mb-2">
+            <h5 class="text-center"><span class="badge badge-secondary">Total Antrian : </span></h5>
+            <h4 class="tempelcount" id="countantrian">&nbsp;0</h4>
+        </div>
+
+
+
+        <!-- modal form -->
+        <div class="modal fade" id="modaladdantrian" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Delete Customer</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">Add Antrian</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    Yakin ingin menghapus data antrian ini ?
-                </div>
-                <div class="modal-footer">
-                    <input type="hidden" name="custid" class="SPBUID">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
-                    <button type="submit" class="btn btn-primary" onclick="deleteantrian()" >Yes</button>
-                </div>
+                    <form method="POST" action="javascript:void(0)" id="form-add-antrian">
+                        <div class="modal-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label>Kode Provider</label>
+                                    <input type="text" name="kdproviderpst" id="kdprovider" class="form-control" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Tanggal Daftar</label>
+                                    <input type="date" name="tgldaftar" id="tgldaftar" placeholder="Pilih Tanggal" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-12">
+                                    <label>No Kartu</label>
+                                    <input type="text" name="nokartu" id="nokartu" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label>Kode Poli</label>
+                                    <select name="kdpoli" id="kdpoli" class="form-control kdpoli">
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Keluhan</label>
+                                    <input type="text" name="keluhan" id="keluhan" placeholder="Masukkan keluhan" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="kunjsakit" name="kunjsakit">
+                                        <label>Kunjungan Sakit</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Siastole</label>
+                                    <input type="number" class="form-control" min=0 id="siastole" name="siastole" value=0>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Diastole</label>
+                                    <input type="number" class="form-control" min=0 id="diastole" name="diastole" value=0>
+                                </div>
+                            </div>     
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label>Berat Badan</label>
+                                    <input type="number" class="form-control" min=0 id="beratbadan" name="beratbadan" value=0>
+                                </div>
+                                <div class="col-md-4">
+                                     <label>Tinggi Badan</label>
+                                    <input type="number" class="form-control" min=0 id="tinggibadan" name="tinggibadan" value=0>
+                                </div>
+                                <div class="col-md-4">
+                                     <label>Resp Rate</label>
+                                    <input type="number" class="form-control" min=0 id="resprate" name="resprate" value=0>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <label>Lingkar Perut</label>
+                                    <input type="number" class="form-control" min=0 id="lingkarperut" name="lingkarperut" value=0>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Heart Rate</label>
+                                    <input type="number" class="form-control" min=0 id="heartrate" name="heartrate" value=0>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="rujukbalik" name="rujukbalik">
+                                        <label>Rujuk Balik</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Kode TKP</label>
+                                    <select name="kdtkp" id="kdtkp" class="form-control kdtkp">
+                                    </select>
+                                </div>
+                            </div>                    
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" id="btnKirimData">Send</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+
+        <!-- close modal form -->
     </div>
 @endsection
 

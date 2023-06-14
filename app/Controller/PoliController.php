@@ -20,20 +20,24 @@ class PoliController
         $url = $_ENV['URL_API'] . "/poli/fktp/" . $start . "/" . $limit;
 
         $response = $rest->callAPI('GET', $url, false);
+        $decodejson1 = json_decode($response, true);
 
-        try {
-            if($response != "")
-            {
-                $decodejson1 = json_decode($response, true);
-
-                if($decodejson1 == null)
+        if(isset($decodejson1["status"]) === 404)
+        {
+            $pesan = [
+                "message" => $decodejson1["message"],
+                "code" => $decodejson1["status"] 
+            ];
+        }
+        else{
+            try {
+                if($decodejson1["metaData"]["code"] === 412)
                 {
                     $pesan = [
-                        "message" => "Gagal Response",
-                        "status" => 400,
+                        "message" => "Gagal Response, Params its not null",
+                        "code" => 412,
                         "data" => $decodejson1
                     ];
-
                     // echo json_encode($pesan);
                 }
                 else{
@@ -43,20 +47,22 @@ class PoliController
             
                     $pesan = [
                         "message" => "Berhasil Response",
-                        "status" => 200,
+                        "code" => 200,
                         "data" => $decodejson
                     ];
             
                     // echo json_encode($pesan);
                 }
+            } catch (\Throwable $pesan) {
+                $pesan = [
+                    "message" => "Data not found for no content",
+                    "code" => 204
+                ];
             }
-        } catch (\Throwable $pesan) {
-            $pesan = [
-                "message" => "Data not found for no content",
-                "code" => 204
-            ];
         }
+
         echo json_encode($pesan);
+        
 
     }
     
